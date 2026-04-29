@@ -6,15 +6,24 @@ interface Props {
   materia: string;
   setPagina: (pagina: string) => void;
   setTutorSeleccionado: (tutor: Tutor) => void;
+
+  // ⭐ NUEVO
+  favoritos: Tutor[];
+  setFavoritos: (t: Tutor[]) => void;
 }
 
-function Materias({ tutores, materia, setPagina, setTutorSeleccionado }: Props) {
+function Materias({
+  tutores,
+  materia,
+  setPagina,
+  setTutorSeleccionado,
+  favoritos,
+  setFavoritos
+}: Props) {
 
-  // 🔥 estados (requisito)
   const [busqueda, setBusqueda] = useState("");
   const [filtroPrecio, setFiltroPrecio] = useState("todos");
 
-  // 🔥 imágenes por materia
   const imagenes: Record<string, string> = {
     programacion: "/imagenes/programacion1.png",
     ingles: "/imagenes/ingles.png",
@@ -29,7 +38,6 @@ function Materias({ tutores, materia, setPagina, setTutorSeleccionado }: Props) 
     historia: "/imagenes/historia.png",
   };
 
-  // 🔥 filtros combinados
   const filtrados = tutores
     .filter(t => t.materia === materia)
     .filter(t => t.nombre.toLowerCase().includes(busqueda.toLowerCase()))
@@ -40,82 +48,103 @@ function Materias({ tutores, materia, setPagina, setTutorSeleccionado }: Props) 
       return true;
     });
 
+  // ⭐ DRAG START
+  function handleDragStart(e: any, tutor: Tutor) {
+    e.dataTransfer.setData("tutor", JSON.stringify(tutor));
+  }
+
+  // ⭐ DROP EN FAVORITOS
+  function handleDrop(e: any) {
+    const data = e.dataTransfer.getData("tutor");
+    const tutor: Tutor = JSON.parse(data);
+
+    const existe = favoritos.find(f => f.id === tutor.id);
+    if (existe) return;
+
+    setFavoritos([...favoritos, tutor]);
+  }
+
   return (
     <div className="container">
 
-      <h2 className="title">Tutores disponibles</h2>
+      <h2>Tutores disponibles</h2>
 
-      {/* 🔥 FILTROS */}
-      <div className="filters">
+      <div style={{ display: "flex", gap: "20px" }}>
 
-        <input
-          type="text"
-          placeholder="Buscar tutor..."
-          value={busqueda}
-          onChange={(e) => setBusqueda(e.target.value)}
-        />
+        {/* 🔵 LISTA TUTORES */}
+        <div style={{ flex: 2 }}>
 
-        <select onChange={(e) => setFiltroPrecio(e.target.value)}>
-          <option value="todos">Todos los precios</option>
-          <option value="bajo">Económicos</option>
-          <option value="medio">Intermedios</option>
-          <option value="alto">Premium</option>
-        </select>
+          <input
+            type="text"
+            placeholder="Buscar tutor..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+          />
 
-      </div>
+          <select onChange={(e) => setFiltroPrecio(e.target.value)}>
+            <option value="todos">Todos</option>
+            <option value="bajo">Económicos</option>
+            <option value="medio">Medios</option>
+            <option value="alto">Premium</option>
+          </select>
 
-      {/* 🔥 GRID */}
-      <div className="grid">
+          <div className="grid">
+            {filtrados.map(t => (
+              <div
+                className="card"
+                key={t.id}
+                draggable
+                onDragStart={(e) => handleDragStart(e, t)}
+              >
+                <img src={imagenes[t.materia]} className="card-img" />
 
-        {filtrados.map(t => (
-          <div className="card" key={t.id}>
+                <h3>{t.nombre}</h3>
+                <p>{t.especialidad}</p>
+                <p className="price">
+                  {t.precio.toLocaleString("es-CO")}
+                </p>
 
-            {/* 🔥 IMAGEN */}
-            <img
-              src={imagenes[t.materia]}
-              alt={t.materia}
-              className="card-img"
-            />
-
-            <h3>{t.nombre}</h3>
-
-            <p className="subtitle">{t.especialidad}</p>
-
-            <p className="descripcion">{t.descripcion}</p>
-
-            <p className="extra">
-              📚 Tutoría enfocada en resultados reales, con práctica,
-              ejercicios guiados y seguimiento personalizado.
-            </p>
-
-            <p className="price">
-              {t.precio.toLocaleString("es-CO", {
-                style: "currency",
-                currency: "COP",
-              })}
-            </p>
-
-            <button
-              onClick={() => {
-                setTutorSeleccionado(t);
-                setPagina("reserva");
-              }}
-            >
-              Agendar clase
-            </button>
-
+                <button
+                  onClick={() => {
+                    setTutorSeleccionado(t);
+                    setPagina("reserva");
+                  }}
+                >
+                  Agendar clase
+                </button>
+              </div>
+            ))}
           </div>
-        ))}
+
+        </div>
+
+        {/* ⭐ FAVORITOS DROP ZONE */}
+        <div
+          style={{
+            flex: 1,
+            border: "2px dashed #14b8a6",
+            padding: "15px",
+            borderRadius: "12px",
+            minHeight: "300px"
+          }}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={handleDrop}
+        >
+          <h3>⭐ Selecciona tus docentes favoritos</h3>
+
+          {favoritos.length === 0 ? (
+            <p>Arrastra aquí tus tutores favoritos</p>
+          ) : (
+            favoritos.map(f => (
+              <div key={f.id} className="card" style={{ marginBottom: "10px" }}>
+                <strong>{f.nombre}</strong>
+                <p>{f.especialidad}</p>
+              </div>
+            ))
+          )}
+        </div>
 
       </div>
-
-      {/* 🔥 MENSAJE SI NO HAY RESULTADOS */}
-      {filtrados.length === 0 && (
-        <p className="empty">
-          ❌ No se encontraron tutores con esos filtros
-        </p>
-      )}
-
     </div>
   );
 }

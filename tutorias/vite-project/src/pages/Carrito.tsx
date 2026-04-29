@@ -40,11 +40,14 @@ function Carrito({ carrito, setCarrito, setReservas }: any) {
       {carrito.length === 0 ? (
         <p>No hay tutorías</p>
       ) : (
-        <>
-          <div className="grid">
+        <div className="cart-layout">
+
+          {/* LISTA DE CARRITO */}
+          <div className="cart-items">
+
             {carrito.map((item: CarritoItem, i: number) => (
               <div
-                className="card"
+                className="card cart-card"
                 key={i}
                 draggable
                 onDragStart={(e) => handleDragStart(e, i)}
@@ -52,10 +55,11 @@ function Carrito({ carrito, setCarrito, setReservas }: any) {
                 onDrop={(e) => handleDrop(e, i)}
               >
                 <h3>{item.nombre}</h3>
-                <p>{item.tutor}</p>
-                <p>{item.fecha}</p>
-                <p>{item.hora}</p>
-                <p>{item.modalidad}</p>
+
+                <p>👨‍🏫 {item.tutor}</p>
+                <p>📅 {item.fecha}</p>
+                <p>⏰ {item.hora}</p>
+                <p>📍 {item.modalidad}</p>
 
                 <p className="price">
                   ${item.precio.toLocaleString("es-CO")}
@@ -66,14 +70,27 @@ function Carrito({ carrito, setCarrito, setReservas }: any) {
                 </button>
               </div>
             ))}
+
           </div>
 
-          <h3>Total: ${total.toLocaleString("es-CO")} COP</h3>
+          {/* RESUMEN */}
+          <div className="cart-summary">
+            <h3>Resumen de compra</h3>
 
-          <button onClick={finalizarCompra}>
-            Finalizar compra
-          </button>
-        </>
+            <p>Total de clases:</p>
+            <h2>{carrito.length}</h2>
+
+            <p>Total a pagar:</p>
+            <h2 className="price">
+              ${total.toLocaleString("es-CO")} COP
+            </h2>
+
+            <button onClick={finalizarCompra}>
+              Finalizar compra
+            </button>
+          </div>
+
+        </div>
       )}
     </div>
   );

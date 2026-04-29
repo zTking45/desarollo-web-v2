@@ -20,30 +20,20 @@ function App() {
   const [carrito, setCarrito] = useState<CarritoItem[]>([]);
   const [reservas, setReservas] = useState<CarritoItem[]>([]);
 
-  // 🌙 DARK MODE
+  // ⭐ NUEVO: FAVORITOS
+  const [favoritos, setFavoritos] = useState<Tutor[]>([]);
+
   useEffect(() => {
     document.body.classList.toggle("dark", darkMode);
   }, [darkMode]);
 
-  // 💾 GUARDAR CARRITO
   useEffect(() => {
     localStorage.setItem("carrito", JSON.stringify(carrito));
   }, [carrito]);
 
-  // 💾 CARGAR CARRITO
   useEffect(() => {
     const data = localStorage.getItem("carrito");
     if (data) setCarrito(JSON.parse(data));
-  }, []);
-
-  // 🌐 FETCH (requisito cumplido - oculto)
-  useEffect(() => {
-    fetch("https://jsonplaceholder.typicode.com/posts?_limit=3")
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("API funcionando:", data);
-      })
-      .catch((err) => console.error(err));
   }, []);
 
   return (
@@ -54,10 +44,8 @@ function App() {
         darkMode={darkMode}
       />
 
-      {/* HOME */}
       {pagina === "home" && <Home setPagina={setPagina} />}
 
-      {/* CATALOGO */}
       {pagina === "catalogo" && (
         <Catalogo
           setPagina={setPagina}
@@ -65,22 +53,21 @@ function App() {
         />
       )}
 
-      {/* MATERIAS */}
       {pagina === "materias" && (
         <Materias
           tutores={tutoresData}
           materia={materia}
           setPagina={setPagina}
           setTutorSeleccionado={setTutor}
+          favoritos={favoritos}
+          setFavoritos={setFavoritos}
         />
       )}
 
-      {/* RESERVA */}
       {pagina === "reserva" && (
         <Reserva tutor={tutor} setCarrito={setCarrito} />
       )}
 
-      {/* CARRITO */}
       {pagina === "carrito" && (
         <Carrito
           carrito={carrito}
@@ -89,12 +76,10 @@ function App() {
         />
       )}
 
-      {/* MIS RESERVAS */}
       {pagina === "misReservas" && (
         <MisReservas reservas={reservas} />
       )}
 
-      {/* NOSOTROS */}
       {pagina === "nosotros" && <SobreNosotros />}
 
       <Footer />

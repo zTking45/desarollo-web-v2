@@ -498,3 +498,55 @@ footer {
     padding: 35px 20px;
   }
 }
+
+/* ===== CARRITO ===== */
+
+.cart-layout {
+  display: flex;
+  gap: 25px;
+  margin-top: 20px;
+  align-items: flex-start;
+}
+
+/* LISTA */
+.cart-items {
+  flex: 3;
+  display: grid;
+  gap: 15px;
+}
+
+/* CARD CARRITO */
+.cart-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* RESUMEN */
+.cart-summary {
+  flex: 1;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 20px;
+
+  position: sticky;
+  top: 100px;
+  height: fit-content;
+}
+
+.cart-summary h2 {
+  color: var(--primary);
+  margin: 10px 0;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .cart-layout {
+    flex-direction: column;
+  }
+
+  .cart-summary {
+    position: static;
+  }
+}
