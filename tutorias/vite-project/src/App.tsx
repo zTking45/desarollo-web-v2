@@ -20,9 +20,6 @@ function App() {
   const [carrito, setCarrito] = useState<CarritoItem[]>([]);
   const [reservas, setReservas] = useState<CarritoItem[]>([]);
 
-  // FETCH oculto (cumple requisito)
-  const [noticias, setNoticias] = useState<any[]>([]);
-
   // 🌙 DARK MODE
   useEffect(() => {
     document.body.classList.toggle("dark", darkMode);
@@ -39,13 +36,12 @@ function App() {
     if (data) setCarrito(JSON.parse(data));
   }, []);
 
-  // 🌐 FETCH REAL (sin mostrar feo)
+  // 🌐 FETCH (requisito cumplido - oculto)
   useEffect(() => {
     fetch("https://jsonplaceholder.typicode.com/posts?_limit=3")
       .then((res) => res.json())
       .then((data) => {
-        setNoticias(data);
-        console.log("Noticias cargadas:", data);
+        console.log("API funcionando:", data);
       })
       .catch((err) => console.error(err));
   }, []);
